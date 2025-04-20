@@ -68,4 +68,21 @@ Where:
 - P = Partial knowledge of other teams' rosters
 
 
-This was my first idea, as much as I would like to do this highly complicated version, state space is simply too large, like really too large. So I'm going to reduce the problem size in order to make this feasable. This means loosing realism, but with my current tools I can't exactly deal with the estimated 10^6900 state spaces :(.
+This was my first idea, as much as I would like to do this highly complicated version, state space is simply too large, like really too large. So I'm going to reduce the problem size in order to make this feasable. This means loosing realism, but with my current tools I can't exactly deal with the estimated 10^6900 state spaces :(. That's using all 8 teams with ~20 swimmers each.
+
+Next Ideas: 
+- Cannot model all 8 Teams, too many interactions.
+- Simplify state space.
+ 
+
+
+Next Implementation: I really pains me to simplify this state space so much but it must be done. These spaces really do blow up fast.
+- 4 Teams, all with the same budget, roster limit of 20 swimmers. Popularity in range {low, med, high}
+- 12 Recruits present each year, with a given speciality {Sprint, Stroke Distance}, Team fit score of {0,1,2,3}
+- Each swimmer has the same specialty.
+- Budget is 100k, with offers in 10k increments.
+- Trying to limit states by enumerating values into buckets.
+- Reduce potentially nonvaluable variables.
+Work in progress...
+
+

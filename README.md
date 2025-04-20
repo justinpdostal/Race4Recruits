@@ -66,3 +66,6 @@ Where:
 - V = Visible swimmer attributes (times, events)
 - H = Hidden attributes (potential, injury risk)
 - P = Partial knowledge of other teams' rosters
+
+
+This was my first idea, as much as I would like to do this highly complicated version, state space is simply too large, like really too large. So I'm going to reduce the problem size in order to make this feasable. This means loosing realism, but with my current tools I can't exactly deal with the estimated 10^6900 state spaces :(.

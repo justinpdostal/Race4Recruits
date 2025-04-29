@@ -1,74 +1,78 @@
-from typing import List, Dict
-from classes.conference import Conference
 from swimmer import Swimmer
 
 class Team:
-    def __init__(self, name: str, budget: float = 10.0, popularity: float = 0.5):
+    def __init__(self, name, budget, popularity=50):
+        """
+        Initialize a swimming team.
+        
+        Args:
+            name (str): Team name
+            budget (int): Budget in 10k increments
+            popularity (int): Popularity score (0-100)
+        """
         self.name = name
         self.budget = budget
-        self.popularity = popularity  # 0.0-1.0 recruit attraction
-        self.roster: List[Swimmer] = []
-        self.history: List[Dict] = []  # Past meet results
-
-    def add_swimmer(self, swimmer: Swimmer) -> bool:
-        """Add swimmer if budget allows, return success status"""
-        if self.budget >= swimmer.scholarship_cost:
+        self.popularity = popularity
+        self.roster = []
+        self.conference_scores = []  # Track historical performance
+        
+    def add_swimmer(self, swimmer):
+        """Add a swimmer to the roster if there's space."""
+        if len(self.roster) < 20:
             self.roster.append(swimmer)
-            self.budget -= swimmer.scholarship_cost
+            self.popularity += swimmer.team_fit
+            self.popularity = max(0, min(100, self.popularity))  # Keep within bounds
             return True
         return False
-
-    def remove_swimmer(self, swimmer: Swimmer) -> None:
-        """Remove swimmer from roster"""
+    
+    def remove_swimmer(self, swimmer):
+        """Remove a swimmer from the roster."""
         if swimmer in self.roster:
             self.roster.remove(swimmer)
-            self.budget += swimmer.scholarship_cost
-
-    def get_swimmers_by_event(self, event: str) -> List[Swimmer]:
-        """Return all swimmers who compete in this event"""
-        return [s for s in self.roster if event in s.events]
-
-    def update_after_meet(self, placements: Dict[str, int]) -> None:
-        """Update team history and popularity based on meet results"""
-        self.history.append(placements)
-        # Simple popularity adjustment based on placement
-        placement_score = sum(17 - p for p in placements.values()) / len(placements)
-        self.popularity = min(1.0, max(0.0, self.popularity + (placement_score - 8) * 0.05))
-
-
-    def projected_points(self, conference_data: Dict) -> Dict[str, float]:
-        """
-        Calculate projected points for all swimmers by event
-        Returns:
-            Dictionary of {event: total_points}
-        """
-        event_points = {event: 0.0 for event in Conference.EVENTS}
-        
+            self.popularity -= swimmer.team_fit
+            self.popularity = max(0, min(100, self.popularity))
+    
+    def decrement_years(self):
+        """Decrement years for all swimmers and remove those with 0 years left."""
+        swimmers_to_remove = []
         for swimmer in self.roster:
-            for event in swimmer.events:
-                if event not in conference_data.get("conference_times", {}):
-                    continue
-                    
-                swimmer_time = swimmer.times.get(event, float('inf'))
-                event_results = conference_data["conference_times"][event]
-                
-                # Find placement (same logic as swimmer_points)
-                placements = [e["time"] for e in event_results]
-                placements.sort()
-                
-                swimmer_place = len(placements)
-                for i, time in enumerate(placements):
-                    if swimmer_time <= time:
-                        swimmer_place = i + 1
-                        break
-                        
-                if swimmer_place <= 3:
-                    points = 21 - swimmer_place
-                elif swimmer_place <= 16:
-                    points = 17 - swimmer_place
-                else:
-                    points = 0
-                    
-                event_points[event] += points
-                
-        return event_points
+            if not swimmer.decrement_year():
+                swimmers_to_remove.append(swimmer)
+        
+        for swimmer in swimmers_to_remove:
+            self.remove_swimmer(swimmer)
+    
+    def calculate_team_score(self):
+        """Calculate the team's projected conference score."""
+        total_score = 0
+        for swimmer in self.roster:
+            total_score += swimmer.get_score_contribution()
+        return total_score
+    
+    def can_afford(self, swimmer):
+        """Check if team can afford a swimmer's scholarship request."""
+        return self.budget >= swimmer.scholarship
+    
+    def make_bid(self, swimmer, bid_amount):
+        """
+        Make a bid on a swimmer.
+        
+        Args:
+            swimmer (Swimmer): Swimmer to bid on
+            bid_amount (int): Bid amount in 10k increments
+            
+        Returns:
+            bool: True if bid was successful
+        """
+        if bid_amount > self.budget:
+            return False
+        
+        if bid_amount >= swimmer.scholarship:
+            self.budget -= bid_amount
+            self.add_swimmer(swimmer)
+            return True
+        return False
+    
+    def __str__(self):
+        return (f"{self.name} (Budget: ${self.budget * 10000}, Popularity: {self.popularity}, "
+                f"Roster Size: {len(self.roster)}, Projected Score: {self.calculate_team_score()})")

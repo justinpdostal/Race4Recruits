@@ -19,70 +19,72 @@ The system evolves annually through recruiting cycles and championship meets, wi
 
 
 
-State(S):
-S = (T, R, C, Y)
-Where:
-- T = {T₁, T₂, ..., Tₙ} (Set of all teams)
-- R = Recruit pool (Set of available swimmers)
-- C = Conference meet results history
-- Y = Current year ∈ ℕ
+Race4Recruits
 
-Team State (Tᵢ):
-Tᵢ = (bᵢ, Pᵢ, Hᵢ, τᵢ)
-Where:
-- bᵢ = Budget ∈ ℝ⁺
-- Pᵢ = Popularity score ∈ [0,1]
-- Hᵢ = Historical placements (List of past results)
-- τᵢ = {s₁, s₂, ..., sₖ} (Team roster)
+State (S) Components:
+1. Teams (T) - 4 teams (reduced from 8)
+   • Each team state (Tᵢ) = (bᵢ, Pᵢ, Hᵢ, τᵢ)
+   • Budget (bᵢ): [0-100] discretized to 10 levels
+   • Popularity (Pᵢ): [0-100] discretized to 10 levels
+   • History (Hᵢ): Last 3 years' placements
+   • Roster (τᵢ): Max 20 swimmers (reduced attributes)
 
-Swimmer State (s):
-s = (E, t, e, c, p, r, f)
-Where:
-- E = Events (Set of event codes)
-- t = Times (E → ℝ⁺)
-- e = Eligibility years remaining ∈ {0,1,2,3,4}
-- c = Scholarship cost ∈ [0,1]
-- p = Potential ∈ [0.8,1.2]
-- r = Injury risk ∈ [0,0.3]
-- f = Team fit ∈ [0,1]
+2. Recruit Pool (R): 
+   • Size = 50 swimmers (reduced from 100)
+   • Each swimmer = (E, t, c, f) git 
+     - E: 3 events from 13 types
+     - t: Times discretized to 5 levels per event
+     - c: Scholarship [0,10,20,30,40,50]
+     - f: Team fit [-5 to 5]
 
-Actions (A):
-A = {offer_scholarship(s, a), pass, rescind_offer}
-Where:
-- s = Swimmer ∈ R
-- a = Amount ∈ [0, bᵢ]
+3. Conference History (C): 
+   • Stores last 5 years' results
+   • Each result = ordered list of (team, score) pairs
 
-Transitions (δ):
-δ(S, A) → S'
-With:
-- Recruiting: Tᵢ.budget -= a if successful offer
-- Aging: ∀s ∈ τᵢ, s.e -= 1 (remove if s.e = 0)
-- Development: ∀s ∈ τᵢ, tₑ *= (1 - η·p) (η = improvement rate)
-- Injuries: Pr(s injured) = r
+4. Year (Y): 
+   • Current simulation year [1-100]
+
+State Space Size Calculation:
+• Teams: 4 × (10 budget × 10 popularity × 4³ history × 20 roster slots)
+• Recruits: 50 × (C(13,3) events × 5 time levels × 6 scholarships × 11 fits)
+• History: 5 × (4! permutations × 100 score levels)
+• Total states: ~10^18 (manageable vs original 10^6900)
+
+Action Space (A):
+• offer_scholarship(s, a): 
+  - s ∈ [1-50 recruits]
+  - a ∈ [0,10,20,30,40,50]
+• pass: No action
+• rescind_offer: Cancel previous bid
+
+Transition Dynamics (δ):
+1. Recruiting:
+   • Success if bid ≥ swimmer's request
+   • Budget: bᵢ -= a
+   • Popularity: Pᵢ += Δ based on recruit quality
+
+2. Aging:
+   • ∀s ∈ τᵢ: e -= 1
+   • Remove if e = 0
+
+3. Development:
+   • Times improve by p% annually (p ∈ [0.8,1.2])
+   • Injury risk: 5% chance per swimmer
 
 Observations (O):
-O = (V, H, P)
-Where:
-- V = Visible swimmer attributes (times, events)
-- H = Hidden attributes (potential, injury risk)
-- P = Partial knowledge of other teams' rosters
+1. Visible (V):
+   • All swimmer times and events
+   • Team budgets and popularity
+   • Previous meet results
 
+2. Hidden (H):
+   • Swimmer potential (p)
+   • Injury risk (r)
+   • True team fit (f)
 
-This was my first idea, as much as I would like to do this highly complicated version, state space is simply too large, like really too large. So I'm going to reduce the problem size in order to make this feasable. This means loosing realism, but with my current tools I can't exactly deal with the estimated 10^6900 state spaces :(. That's using all 8 teams with ~20 swimmers each.
-
-Next Ideas: 
-- Cannot model all 8 Teams, too many interactions.
-- Simplify state space.
  
 
 
-Next Implementation: I really pains me to simplify this state space so much but it must be done. These spaces really do blow up fast.
-- 4 Teams, all with the same budget, roster limit of 20 swimmers. Popularity in range {low, med, high}
-- 12 Recruits present each year, with a given speciality {Sprint, Stroke Distance}, Team fit score of {0,1,2,3}
-- Each swimmer has the same specialty.
-- Budget is 100k, with offers in 10k increments.
-- Trying to limit states by enumerating values into buckets.
-- Reduce potentially nonvaluable variables.
-Work in progress...
+
 
 

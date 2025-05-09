@@ -8,7 +8,7 @@ class Conference:
         9: 9, 10: 7, 11: 6, 12: 5, 13: 4, 14: 3, 15: 2, 16: 1    # B final
     }
     
-    def __init__(self, team_names, initial_budgets, pool_size=50):
+    def __init__(self, team_names, initial_budgets, pool_size=100):
         """
         Initialize a swimming conference.
         
@@ -203,7 +203,7 @@ class Conference:
             team.decrement_years()
         
         # Replenish recruit pool
-        self.recruit_pool.replenish(50)
+        self.recruit_pool.replenish(200)
         
     
     

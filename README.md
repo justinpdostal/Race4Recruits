@@ -9,11 +9,10 @@ An intelligent system that uses reinforcement learning to optimize college swimm
 - [Action Space](#action-space)
 - [Observations](#observations)
 - [Key Features](#key-features)
-- [Usage](#usage)
 - [Simulation Parameters](#simulation-parameters)
 - [Results Visualization](#results-visualization)
 - [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
+- [Problems](#problems)
 
 ## Problem Overview
 

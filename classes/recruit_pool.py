@@ -7,7 +7,7 @@ class RecruitPool:
         "100 BR", "200 BR", "200 IM", "400 IM"
     ]
     
-    def __init__(self, pool_size=20):
+    def __init__(self, pool_size=1):
         """Initialize a pool of recruits."""
         self.pool = []
         self.generate_pool(pool_size)

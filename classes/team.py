@@ -13,41 +13,46 @@ class Team:
         self.name = name
         self.budget = budget
         self.popularity = popularity
-        self.roster = []
+        self.roster = []  # List of (swimmer, scholarship_amount) tuples
         self.conference_scores = []  # Track historical performance
         
-    def add_swimmer(self, swimmer):
+    def add_swimmer(self, swimmer, scholarship_amount):
         """Add a swimmer to the roster if there's space."""
         if len(self.roster) < 20:
-            self.roster.append(swimmer)
+            self.roster.append((swimmer, scholarship_amount))
             self.popularity += swimmer.team_fit
-            self.popularity = max(0, min(100, self.popularity))  # Keep within bounds
+            self.popularity = max(0, min(100, self.popularity))
             return True
         return False
     
     def remove_swimmer(self, swimmer):
-        """Remove a swimmer from the roster."""
-        if swimmer in self.roster:
-            self.roster.remove(swimmer)
-            self.popularity -= swimmer.team_fit
-            self.popularity = max(0, min(100, self.popularity))
+        """Remove a swimmer from the roster and return their scholarship to budget."""
+        for i, (s, scholarship) in enumerate(self.roster):
+            if s == swimmer:
+                self.roster.pop(i)
+                self.popularity -= swimmer.team_fit
+                self.popularity = max(0, min(100, self.popularity))
+                self.budget += scholarship  # Return scholarship to budget
+                return
+        raise ValueError("Swimmer not found in roster")
     
     def decrement_years(self):
-        """Decrement years for all swimmers and remove those with 0 years left."""
+        """Properly handle graduation and scholarship returns"""
         swimmers_to_remove = []
-        for swimmer in self.roster:
+        for swimmer, scholarship in self.roster:
             if not swimmer.decrement_year():
-                swimmers_to_remove.append(swimmer)
-        
-        for swimmer in swimmers_to_remove:
-            self.remove_swimmer(swimmer)
+                swimmers_to_remove.append((swimmer, scholarship))
     
+        for swimmer, scholarship in swimmers_to_remove:
+            self.remove_swimmer(swimmer)
+            
+            
     def calculate_team_score(self):
-        """Calculate the team's projected conference score."""
-        total_score = 0
-        for swimmer in self.roster:
-            total_score += swimmer.get_score_contribution()
-        return total_score
+        """Go through all the events and calculate the team's score. Do 
+        this by for each swimmers event, compare their times to the other teams and their own team.
+        Rank the top 16 scores and assign points based on NCAA scoring. if there exists a tie use team popularity to break it."""
+        return 0
+    
     
     def can_afford(self, swimmer):
         """Check if team can afford a swimmer's scholarship request."""
@@ -69,7 +74,7 @@ class Team:
         
         if bid_amount >= swimmer.scholarship:
             self.budget -= bid_amount
-            self.add_swimmer(swimmer)
+            self.add_swimmer(swimmer, bid_amount)
             return True
         return False
     

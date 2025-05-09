@@ -154,3 +154,8 @@ Planned improvements to the simulation and learning framework include:
 - **Relay Event Scoring**: Add relay events to meet simulations for more realistic scoring.
 - **Conference Realignment**: Simulate changes in conference composition over time.
 - **Coaching Changes**: Introduce coaching turnover that affects team strategies and swimmer development.
+- ** Enhanched Realism**: Ensure all variables are tweaked in order to most closley represent real life swimming.
+
+## Problems
+- Teams really love grabbing recruits in waves. I couldn't tweak the logic enough to ensure proper budgeting like in real life. There are safeguards against this but they aren't currently strong enough to require even splitting of recruiting.
+- Sarsa logic can be strengthened and improved to ensure smart play is rewarded every time.

@@ -11,8 +11,8 @@ from SarsaAgent import SarsaAgent
 
 def run_simulation(num_years):
     """Enhanced simulation with detailed tracking"""
-    team_names = ["Team A", "Team B", "Team C", "Team D"]
-    initial_budgets = [500, 500, 500, 500]  # $10k units
+    team_names = ["Team A", "Team B", "Team C", "Max Team", "Random Team"]
+    initial_budgets = [500, 500, 500, 500,500]  # $10k units
     
     conference = Conference(team_names, initial_budgets)
     agent = SarsaAgent(conference, alpha=0.2, gamma=0.95, epsilon=0.3)
@@ -27,5 +27,5 @@ def run_simulation(num_years):
 
 
 if __name__ == "__main__":
-    num_years = 150
+    num_years = 200
     conference, agent = run_simulation(num_years)

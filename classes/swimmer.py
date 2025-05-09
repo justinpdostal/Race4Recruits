@@ -78,51 +78,58 @@ class Swimmer:
     @classmethod
     def generate_random_swimmer(cls, event_types):
         """Generate a random swimmer for the recruit pool."""
-        first_names = ["John", "Michael", "David", "James", "Robert", "William"] 
+        first_names = ["John", "Michael", "David", "James", "Robert", "William"]
         last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller"]
-        
+
         name = f"{random.choice(first_names)} {random.choice(last_names)}"
         events = random.sample(event_types, 3)
-        
+
         event_placements = {}
         event_times = {}
-        
+
         # Generate realistic times based on event
         time_ranges = {
-            "50 FR": (19.0, 24.0),
-            "100 FR": (43.0, 52.0),
-            "200 FR": (93.0, 115.0),
-            "500 FR": (255.0, 280.0),
-            "1650 FR": (900.0, 1000.0),
-            "100 FL": (45.0, 55.0),
-            "200 FL": (100.0, 115.0),
-            "100 BA": (46.0, 55.0),
-            "200 BA": (100.0, 115.0),
-            "100 BR": (53.0, 63.0),
-            "200 BR": (115.0, 130.0),
-            "200 IM": (100.0, 115.0),
-            "400 IM": (220.0, 260.0)
-        }
-        
+        "50 FR": (19.0, 24.0),
+        "100 FR": (43.0, 52.0),
+        "200 FR": (93.0, 115.0),
+        "500 FR": (255.0, 280.0),
+        "1650 FR": (900.0, 1000.0),
+        "100 FL": (45.0, 55.0),
+        "200 FL": (100.0, 115.0),
+        "100 BA": (46.0, 55.0),
+        "200 BA": (100.0, 115.0),
+        "100 BR": (53.0, 63.0),
+        "200 BR": (115.0, 130.0),
+        "200 IM": (100.0, 115.0),
+        "400 IM": (220.0, 260.0)
+    }
+
         for event in events:
             # Generate a random time within the realistic range
             min_time, max_time = time_ranges.get(event, (60.0, 120.0))
             time = random.uniform(min_time, max_time)
             event_times[event] = time
-            
-            # 60% chance to score, 40% chance to not score
-            if random.random() < 0.6:
+
+            # Calculate placement based on the swimmer's time
+            best_possible_time = min_time  # Best possible time for this event
+            time_ratio = (time - best_possible_time) / (max_time - best_possible_time)
+
+            # Invert the time_ratio so that a better time results in a lower placement number
+            if time_ratio < 0.5:  # Fast enough to be in the top places
                 placement = random.choices(
-                    range(1, 17),
-                    weights=[10, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1]
-                )[0]
-            else:
-                placement = None  # Doesn't score
+                    range(1, 17),  # Possible placements (1 to 16)
+                    weights=[10, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1])[0]
+            else:  # Slower time
+                # Gradually worse placements with slower times
+                placement = random.choices(
+            range(17, 41),  # Possible placements (17 to 40 for slower swimmers)
+            weights=[1, 1, 1, 2, 3, 5, 7, 10, 12, 15, 15, 12, 10, 8, 6, 4, 2, 1, 1, 1, 1, 1, 1, 1],)[0]
+
             event_placements[event] = placement
-        
+
         scholarship = random.choice([0, 10, 20, 30, 40, 50])
         team_fit = random.randint(-5, 5)
-        
+
         return cls(name, events, event_placements, event_times, scholarship, team_fit)
     
     def __str__(self):

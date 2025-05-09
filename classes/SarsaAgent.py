@@ -99,6 +99,8 @@ class SarsaAgent:
 
     def choose_action(self, state, team, swimmer):
         """Budget-constrained ε-greedy policy"""
+
+    
         if np.random.random() < self.epsilon:
             affordable = [a for a in self.actions if a <= team.budget]
             return random.choice(affordable) if affordable else 0
@@ -111,6 +113,12 @@ class SarsaAgent:
         
         if not affordable_q:
             return 0
+        
+        if team.name == "Max Team":
+            return max(self.actions) 
+        
+        if team.name == "Random Team":
+            return random.choice(self.actions)
             
         max_q = max(affordable_q.values())
         best_actions = [a for a, q in affordable_q.items() if q == max_q]

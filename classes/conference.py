@@ -17,8 +17,7 @@ class Conference:
             initial_budgets (list): List of initial budgets for teams
             pool_size (int): Size of recruit pool
         """
-        if len(team_names) != 4 or len(initial_budgets) != 4:
-            raise ValueError("Conference must have exactly 4 teams")
+        
             
         self.teams = [Team(name, budget) for name, budget in zip(team_names, initial_budgets)]
         self.recruit_pool = RecruitPool(pool_size)

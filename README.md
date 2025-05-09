@@ -1,13 +1,14 @@
 # Race4Recruits: AI-Powered Swimming Recruitment Optimization
 
-
 An intelligent system that uses reinforcement learning to optimize college swimming team recruitment strategies in a competitive environment.
 
 ## Table of Contents
 - [Problem Overview](#problem-overview)
 - [Technical Approach](#technical-approach)
+- [State Space](#state-space)
+- [Action Space](#action-space)
+- [Observations](#observations)
 - [Key Features](#key-features)
-- [Installation](#installation)
 - [Usage](#usage)
 - [Simulation Parameters](#simulation-parameters)
 - [Results Visualization](#results-visualization)
@@ -53,6 +54,55 @@ We implemented a modified SARSA (State-Action-Reward-State-Action) reinforcement
 - End-of-year performance rewards
 - Parallel training capability
 
+## State Space
+
+The state space is a 9-dimensional tuple representing the current situation when making recruitment decisions:
+
+1. **Budget tier** (0-10): Current available budget divided by 10
+2. **Scholarship ask** (0-5): Swimmer's requested scholarship divided by 10
+3. **Team popularity** (0-10): Team's popularity score divided by 10
+4. **Swimmer team fit** (0-10): Swimmer's compatibility with team (from -5 to 5, normalized to 0-10)
+5. **Roster size** (0-10): Current number of swimmers on team divided by 2
+6. **Recent performance** (0-10): Team's last conference score divided by 100
+7. **Scoring events** (count): Number of events the swimmer can score in
+8. **Team strength** (0-20): Sum of all swimmers' score contributions divided by 50
+9. **Eligibility years** (1-4): Years remaining for the recruit
+
+## Action Space
+
+The action space consists of discrete scholarship amounts that a team can offer:
+
+- Possible actions: [0, 10, 20, 30, 40, 50]
+  - 0: No bid (pass on the recruit)
+  - 10-50: Scholarship amounts in $10k increments
+    - Example: 20 = $20,000 scholarship offer
+
+Actions are constrained by the team's current budget - a team cannot offer more than its available budget.
+
+## Observations
+
+The system observes and tracks several key metrics during the simulation:
+
+1. **Team Performance Metrics**:
+   - Annual conference scores
+   - Year-over-year ranking changes
+   - Performance trends
+
+2. **Financial Metrics**:
+   - Budget utilization over time
+   - Scholarship allocation patterns
+   - Year-end budget balances
+
+3. **Roster Composition**:
+   - Number of swimmers per team
+   - Class year distribution
+   - Event coverage
+
+4. **Recruitment Outcomes**:
+   - Bid success rates
+   - Scholarship amounts
+   - Team preferences
+
 ## Key Features
 
 - **Realistic Swimming Simulation**
@@ -71,9 +121,36 @@ We implemented a modified SARSA (State-Action-Reward-State-Action) reinforcement
   - Roster composition evolution
   - Team popularity changes
 
-## Installation
+## Simulation Parameters
+- **Key adjustable parameters in main.py:**
+    - num_years: Number of years to simulate (default: 150)
+    - initial_budgets: Starting budgets for each team (default: [500, 500, 500, 500] in $10k units)
+    - Key adjustable parameters in SarsaAgent.py:
+    - alpha: Learning rate (default: 0.2)
+    - gamma: Discount factor (default: 0.95)
+    - epsilon: Initial exploration rate (default: 0.3)
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/Race4Recruits.git
-cd Race4Recruits
+## Results Visualization
+
+The system provides three interactive plots to analyze team dynamics over time:
+
+### Team Scores Over Time
+- Visualizes total conference points earned each year
+- Highlights long-term performance trends and competitiveness
+
+### Team Budgets Over Time
+- Tracks scholarship budget usage throughout seasons
+- Reveals different financial management strategies across teams
+
+### Roster Sizes Over Time
+- Displays how team rosters grow and shrink annually
+- Illustrates team-building approaches and class distributions
+
+## Future Enhancements
+
+Planned improvements to the simulation and learning framework include:
+
+### Enhanced Simulation Features
+- **Relay Event Scoring**: Add relay events to meet simulations for more realistic scoring.
+- **Conference Realignment**: Simulate changes in conference composition over time.
+- **Coaching Changes**: Introduce coaching turnover that affects team strategies and swimmer development.

@@ -193,9 +193,11 @@ class SarsaAgent:
     def track_progress(self, year, results):
         """Record detailed training metrics"""
         self.learning_stats['years'].append(year)
-        self.learning_stats['scores'].append(
-            [score for _, score in results])
-        
+    
+        # Convert scores to dict to preserve team associations
+        score_dict = {team: score for team, score in results}
+        self.learning_stats['scores'].append(score_dict)
+
         for team in self.conference.teams:
             self.learning_stats['budgets'][team.name].append(team.budget)
             self.learning_stats['rosters'][team.name].append(len(team.roster))
@@ -219,8 +221,8 @@ class SarsaAgent:
         
         # Scores subplot
         plt.subplot(2, 2, 1)
-        for i, team in enumerate(self.conference.teams):
-            scores = [s[i] for s in self.learning_stats['scores']]
+        for team in self.conference.teams:
+            scores = [score_dict[team.name] for score_dict in self.learning_stats['scores']]
             plt.plot(self.learning_stats['years'], scores, label=team.name)
         plt.title("Team Scores Over Time")
         plt.xlabel("Year")
@@ -249,17 +251,20 @@ class SarsaAgent:
         plt.ylabel("Swimmers")
         plt.legend()
         
-        # Parameters subplot
-        plt.subplot(2, 2, 4)
-        epsilons = [self.initial_epsilon * (0.99 ** y) 
-                   for y in self.learning_stats['years']]
-        alphas = [self.initial_alpha * (0.995 ** y) 
-                 for y in self.learning_stats['years']]
-        plt.plot(self.learning_stats['years'], epsilons, label="ε (exploration)")
-        plt.plot(self.learning_stats['years'], alphas, label="α (learning rate)")
-        plt.title("Parameter Decay")
-        plt.xlabel("Year")
-        plt.legend()
+        
+        # Add final winner annotation
+        final_scores = self.learning_stats['scores'][-1]  # A dict of {team_name: score}
+        winner_name = max(final_scores, key=final_scores.get)
+        winner_score = final_scores[winner_name]
+        plt.subplot(2, 2, 1)
+        plt.annotate(f"Winner: {winner_name}",
+             xy=(self.learning_stats['years'][-1], winner_score),
+             xytext=(-120, 30),
+             textcoords='offset points',
+             arrowprops=dict(arrowstyle="->", lw=1.5),
+             fontsize=12, color='green', fontweight='bold')
+
+        
         
         plt.tight_layout()
         plt.show()

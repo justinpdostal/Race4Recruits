@@ -28,8 +28,7 @@ class Conference:
         """Simulate a more realistic bidding process for recruits."""
         recruits = self.recruit_pool.get_recruits().copy()
 
-        # Shuffle team order each year to prevent bias
-        teams = random.sample(self.teams, len(self.teams))
+        
 
         
     
@@ -44,7 +43,7 @@ class Conference:
         random.shuffle(recruits[10:])  # Shuffle remaining recruits
     
         for swimmer in recruits:
-            random.shuffle(teams)  # Randomize team order for each swimmer
+            
             # Calculate swimmer's preference for each team (based on team performance)
             team_preferences = {}
             for team in self.teams:
@@ -124,7 +123,7 @@ class Conference:
                 
                     # Boost team popularity from successful recruitment
                     winning_team.popularity = min(
-                    100, 
+                    50, 
                     winning_team.popularity + swimmer.team_fit + random.randint(0, 5)
                 )
     

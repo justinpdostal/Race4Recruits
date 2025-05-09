@@ -201,14 +201,14 @@ class SarsaAgent:
             self.learning_stats['rosters'][team.name].append(len(team.roster))
 
     def print_progress(self, year, results, total_years):
-        """Verbose progress reporting"""
+        """report"""
         if year % 10 == 0 or year == 1 or year == total_years or year >0:
             print(f"\nYear {year}/{total_years}")
             print("Standings:", [f"{team}:{score}" for team, score in results])
             print("Roster Sizes:",)
             print(f"ε: {self.epsilon:.3f} α: {self.alpha:.3f}")
             print("Roster Size:", {team.name: len(team.roster) for team in self.conference.teams})
-            #print("Team Budgets:", {team.name: team.budget for team in self.conference.teams})
+            
 
     def plot_learning(self):
         """Comprehensive learning visualization"""

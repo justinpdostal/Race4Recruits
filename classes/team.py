@@ -1,3 +1,4 @@
+import random
 from swimmer import Swimmer
 
 class Team:
@@ -45,6 +46,11 @@ class Team:
     
         for swimmer, scholarship in swimmers_to_remove:
             self.remove_swimmer(swimmer)
+
+        # Small random change to popularity (between -2 and +2)
+        self.budget += random.randint(-2, 2) * 10  # Adjust budget by $20k to $20k
+        self.popularity += random.randint(-10, 10)
+        self.popularity = max(0, min(100, self.popularity))
             
             
     def calculate_team_score(self):

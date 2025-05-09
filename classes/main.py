@@ -9,10 +9,10 @@ except ImportError:
 from conference import Conference
 from SarsaAgent import SarsaAgent
 
-def run_simulation(num_years=1000):
+def run_simulation(num_years):
     """Enhanced simulation with detailed tracking"""
     team_names = ["Team A", "Team B", "Team C", "Team D"]
-    initial_budgets = [200, 200, 200, 200]  # $10k units
+    initial_budgets = [500, 500, 500, 500]  # $10k units
     
     conference = Conference(team_names, initial_budgets)
     agent = SarsaAgent(conference, alpha=0.2, gamma=0.95, epsilon=0.3)
@@ -23,12 +23,9 @@ def run_simulation(num_years=1000):
     if matplotlib_available:
        agent.plot_learning()
     
-    
     return conference, agent
 
 
 if __name__ == "__main__":
-    num_years = 50
+    num_years = 150
     conference, agent = run_simulation(num_years)
-    #print_results(conference)
-    #plot_results(conference, agent)
